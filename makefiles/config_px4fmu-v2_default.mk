@@ -46,6 +46,11 @@ MODULES		+= drivers/px4flow
 MODULES		+= drivers/oreoled
 MODULES		+= drivers/gimbal
 
+# 
+# Simulink Model modules
+# 
+-include $(SIMULINK_MAKE)
+
 #
 # System commands
 #
