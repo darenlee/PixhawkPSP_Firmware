@@ -97,7 +97,7 @@ void TECS::update_state(float baro_altitude, float airspeed, const math::Matrix<
 	// Only required if airspeed is being measured and controlled
 	float temp = 0;
 
-	if (isfinite(airspeed) && airspeed_sensor_enabled()) {
+	if (PX4_ISFINITE(airspeed) && airspeed_sensor_enabled()) {
 		// Get DCM
 		// Calculate speed rate of change
 		// XXX check
@@ -133,7 +133,7 @@ void TECS::_update_speed(float airspeed_demand, float indicated_airspeed,
 
 	// Get airspeed or default to halfway between min and max if
 	// airspeed is not being used and set speed rate to zero
-	if (!isfinite(indicated_airspeed) || !airspeed_sensor_enabled()) {
+	if (!PX4_ISFINITE(indicated_airspeed) || !airspeed_sensor_enabled()) {
 		// If no airspeed available use average of min and max
 		_EAS = 0.5f * (indicated_airspeed_min + indicated_airspeed_max);
 
@@ -229,12 +229,12 @@ void TECS::_update_speed_demand(void)
 void TECS::_update_height_demand(float demand, float state)
 {
 	// Handle initialization
-	if (isfinite(demand) && fabsf(_hgt_dem_in_old) < 0.1f) {
+	if (PX4_ISFINITE(demand) && fabsf(_hgt_dem_in_old) < 0.1f) {
 		_hgt_dem_in_old = demand;
 	}
 	// Apply 2 point moving average to demanded height
 	// This is required because height demand is updated in steps
-	if (isfinite(demand)) {
+	if (PX4_ISFINITE(demand)) {
 		_hgt_dem = 0.5f * (demand + _hgt_dem_in_old);
 	} else {
 		_hgt_dem = _hgt_dem_in_old;
@@ -512,6 +512,7 @@ void TECS::_initialise_states(float pitch, float throttle_cruise, float baro_alt
 		_hgt_dem_in_old = _hgt_dem_adj_last;
 		_TAS_dem_last = _TAS_dem;
 		_TAS_dem_adj = _TAS_dem;
+		_pitch_dem_unc = pitch;
 		_underspeed = false;
 		_badDescent = false;
 
@@ -537,7 +538,7 @@ void TECS::_initialise_states(float pitch, float throttle_cruise, float baro_alt
 void TECS::_update_STE_rate_lim(void)
 {
 	// Calculate Specific Total Energy Rate Limits
-	// This is a tivial calculation at the moment but will get bigger once we start adding altitude effects
+	// This is a trivial calculation at the moment but will get bigger once we start adding altitude effects
 	_STEdot_max = _maxClimbRate * CONSTANTS_ONE_G;
 	_STEdot_min = - _minSinkRate * CONSTANTS_ONE_G;
 }
@@ -621,7 +622,7 @@ void TECS::update_pitch_throttle(const math::Matrix<3,3> &rotMat, float pitch, f
 	_tecs_state.total_energy_error = _STE_error;
 	_tecs_state.energy_distribution_error = _SEB_error;
 	_tecs_state.total_energy_rate_error = _STEdot_error;
-	_tecs_state.energy_distribution_error = _SEBdot_error;
+	_tecs_state.energy_distribution_rate_error = _SEBdot_error;
 
 	_tecs_state.energy_error_integ = _integ6_state;
 	_tecs_state.energy_distribution_error_integ = _integ7_state;

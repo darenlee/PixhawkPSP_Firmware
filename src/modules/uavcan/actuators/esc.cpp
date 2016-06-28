@@ -49,6 +49,8 @@ UavcanEscController::UavcanEscController(uavcan::INode &node) :
 	_uavcan_sub_status(node),
 	_orb_timer(node)
 {
+	_uavcan_pub_raw_cmd.setPriority(UAVCAN_COMMAND_TRANSFER_PRIORITY);
+
 	if (_perfcnt_invalid_input == nullptr) {
 		errx(1, "uavcan: couldn't allocate _perfcnt_invalid_input");
 	}
@@ -188,7 +190,7 @@ void UavcanEscController::orb_pub_timer_cb(const uavcan::TimerEvent &)
 	_esc_status.counter += 1;
 	_esc_status.esc_connectiontype = esc_status_s::ESC_CONNECTION_TYPE_CAN;
 
-	if (_esc_status_pub > 0) {
+	if (_esc_status_pub != nullptr) {
 		(void)orb_publish(ORB_ID(esc_status), _esc_status_pub, &_esc_status);
 
 	} else {

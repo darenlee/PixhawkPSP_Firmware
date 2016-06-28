@@ -31,15 +31,17 @@
  *
  ****************************************************************************/
 
- /**
- * @file standard.h
- * VTOL with fixed multirotor motor configurations (such as quad) and a pusher
- * (or puller aka tractor) motor for forward flight.
- *
- * @author Simon Wilks 		<simon@uaventure.com>
- * @author Roman Bapst 		<bapstroman@gmail.com>
- *
- */
+/**
+* @file standard.h
+* VTOL with fixed multirotor motor configurations (such as quad) and a pusher
+* (or puller aka tractor) motor for forward flight.
+*
+* @author Simon Wilks 		<simon@uaventure.com>
+* @author Roman Bapst 		<bapstroman@gmail.com>
+* @author Andreas Antener	<andreas@uaventure.com>
+* @author Sander Smeets 	<sander@droneslab.com>
+*
+*/
 
 #ifndef STANDARD_H
 #define STANDARD_H
@@ -52,16 +54,15 @@ class Standard : public VtolType
 
 public:
 
-	Standard(VtolAttitudeControl * _att_controller);
+	Standard(VtolAttitudeControl *_att_controller);
 	~Standard();
 
-	void update_vtol_state();
-	void update_mc_state();
-	void process_mc_data();
-	void update_fw_state();
-	void process_fw_data();
-	void update_transition_state();
-	void update_external_state();
+	virtual void update_vtol_state();
+	virtual void update_transition_state();
+	virtual void update_fw_state();
+	virtual void update_mc_state();
+	virtual void fill_actuator_outputs();
+	virtual void waiting_on_tecs();
 
 private:
 
@@ -71,6 +72,10 @@ private:
 		float pusher_trans;
 		float airspeed_blend;
 		float airspeed_trans;
+		float front_trans_timeout;
+		float front_trans_time_min;
+		float down_pitch_max;
+		float forward_thurst_scale;
 	} _params_standard;
 
 	struct {
@@ -79,6 +84,10 @@ private:
 		param_t pusher_trans;
 		param_t airspeed_blend;
 		param_t airspeed_trans;
+		param_t front_trans_timeout;
+		param_t front_trans_time_min;
+		param_t down_pitch_max;
+		param_t forward_thurst_scale;
 	} _params_handles_standard;
 
 	enum vtol_mode {
@@ -91,14 +100,12 @@ private:
 	struct {
 		vtol_mode flight_mode;			// indicates in which mode the vehicle is in
 		hrt_abstime transition_start;	// at what time did we start a transition (front- or backtransition)
-	}_vtol_schedule;
+	} _vtol_schedule;
 
 	bool _flag_enable_mc_motors;
-	float _pusher_throttle;
-	float _mc_att_ctl_weight;	// the amount of multicopter attitude control that should be applied in fixed wing mode while transitioning 
+	float _pusher_throttle;	
 	float _airspeed_trans_blend_margin;
 
-	void fill_att_control_output();
 	void set_max_mc(unsigned pwm_value);
 
 	int parameters_update();

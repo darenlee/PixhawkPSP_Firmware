@@ -37,7 +37,7 @@
  * PWM servo output configuration and monitoring tool.
  */
 
-#include <nuttx/config.h>
+#include <px4_config.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -187,8 +187,7 @@ pwm_main(int argc, char *argv[])
 
 			break;
 
-		case 'p':
-			{
+		case 'p': {
 				/* check if this is a param name */
 				if (strncmp("p:", optarg, 2) == 0) {
 
@@ -203,12 +202,15 @@ pwm_main(int argc, char *argv[])
 
 						if (gret == 0) {
 							pwm_value = pwm_parm;
+
 						} else {
 							usage("PARAM LOAD FAIL");
 						}
+
 					} else {
 						usage("PARAM NAME NOT FOUND");
 					}
+
 				} else {
 
 					pwm_value = strtoul(optarg, &ep, 0);
@@ -348,11 +350,11 @@ pwm_main(int argc, char *argv[])
 	} else if (!strcmp(argv[1], "min")) {
 
 		if (set_mask == 0) {
-			usage("no channels set");
+			usage("min: no channels set");
 		}
 
 		if (pwm_value == 0) {
-			usage("no PWM value provided");
+			usage("min: no PWM value provided");
 		}
 
 		struct pwm_output_values pwm_values;
@@ -379,7 +381,7 @@ pwm_main(int argc, char *argv[])
 		}
 
 		if (pwm_values.channel_count == 0) {
-			usage("no PWM values added");
+			usage("min: no channels provided");
 
 		} else {
 
@@ -426,7 +428,7 @@ pwm_main(int argc, char *argv[])
 		}
 
 		if (pwm_values.channel_count == 0) {
-			usage("no PWM values added");
+			usage("max: no PWM channels");
 
 		} else {
 
@@ -473,7 +475,7 @@ pwm_main(int argc, char *argv[])
 		}
 
 		if (pwm_values.channel_count == 0) {
-			usage("no PWM values added");
+			usage("disarmed: no PWM channels");
 
 		} else {
 
@@ -493,7 +495,7 @@ pwm_main(int argc, char *argv[])
 		}
 
 		if (pwm_value == 0) {
-			usage("no PWM provided");
+			usage("failsafe: no PWM provided");
 		}
 
 		struct pwm_output_values pwm_values;
@@ -520,7 +522,7 @@ pwm_main(int argc, char *argv[])
 		}
 
 		if (pwm_values.channel_count == 0) {
-			usage("no PWM values added");
+			usage("failsafe: no PWM channels");
 
 		} else {
 

@@ -40,12 +40,16 @@
  * @author Marco Bauer <marco@wtns.de>
  */
 
-#include <nuttx/config.h>
+#include <px4_config.h>
 #include <systemlib/param/param.h>
 
 /**
  * Enables testmode (Identify) of MKBLCTRL Driver
  *
+ * @value 0 Disabled
+ * @value 1 Enabled
+ * @min 0
+ * @max 1
  * @group MKBLCTRL Testmode
  */
 PARAM_DEFINE_INT32(MKBLCTRL_TEST, 0);

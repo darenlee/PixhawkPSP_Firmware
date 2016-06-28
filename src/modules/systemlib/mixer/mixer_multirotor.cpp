@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *   Copyright (c) 2012-2015 PX4 Development Team. All rights reserved.
+ *   Copyright (c) 2012-2016 PX4 Development Team. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -36,7 +36,7 @@
  *
  * Multi-rotor mixers.
  */
-#include <nuttx/config.h>
+#include <px4_config.h>
 #include <sys/types.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -150,6 +150,9 @@ MultirotorMixer::from_text(Mixer::ControlCallback control_cb, uintptr_t cb_handl
 	} else if (!strcmp(geomname, "4x")) {
 		geometry = MultirotorGeometry::QUAD_X;
 
+	} else if (!strcmp(geomname, "4h")) {
+		geometry = MultirotorGeometry::QUAD_H;
+
 	} else if (!strcmp(geomname, "4v")) {
 		geometry = MultirotorGeometry::QUAD_V;
 
@@ -176,6 +179,12 @@ MultirotorMixer::from_text(Mixer::ControlCallback control_cb, uintptr_t cb_handl
 
 	} else if (!strcmp(geomname, "8c")) {
 		geometry = MultirotorGeometry::OCTA_COX;
+
+#if 0
+
+	} else if (!strcmp(geomname, "8cw")) {
+		geometry = MultirotorGeometry::OCTA_COX_WIDE;
+#endif
 
 	} else if (!strcmp(geomname, "2-")) {
 		geometry = MultirotorGeometry::TWIN_ENGINE;
@@ -218,7 +227,7 @@ MultirotorMixer::mix(float *outputs, unsigned space, uint16_t *status_reg)
 	float		pitch   = constrain(get_control(0, 1) * _pitch_scale, -1.0f, 1.0f);
 	float		yaw     = constrain(get_control(0, 2) * _yaw_scale, -1.0f, 1.0f);
 	float		thrust  = constrain(get_control(0, 3), 0.0f, 1.0f);
-	float		min_out = 0.0f;
+	float		min_out = 1.0f;
 	float		max_out = 0.0f;
 
 	// clean register for saturation status flags
@@ -298,7 +307,7 @@ MultirotorMixer::mix(float *outputs, unsigned space, uint16_t *status_reg)
 		}
 	}
 
-	if (max_out > 0.0f) {
+	if (max_out > 1.0f) {
 		if (status_reg != NULL) {
 			(*status_reg) |= PX4IO_P_STATUS_MIXER_UPPER_LIMIT;
 		}
@@ -315,8 +324,13 @@ MultirotorMixer::mix(float *outputs, unsigned space, uint16_t *status_reg)
 
 		// scale yaw if it violates limits. inform about yaw limit reached
 		if (out < 0.0f) {
-			yaw = -((roll * _rotors[i].roll_scale + pitch * _rotors[i].pitch_scale) *
-				roll_pitch_scale + thrust + boost) / _rotors[i].yaw_scale;
+			if (fabsf(_rotors[i].yaw_scale) <= FLT_EPSILON) {
+				yaw = 0.0f;
+
+			} else {
+				yaw = -((roll * _rotors[i].roll_scale + pitch * _rotors[i].pitch_scale) *
+					roll_pitch_scale + thrust + boost) / _rotors[i].yaw_scale;
+			}
 
 			if (status_reg != NULL) {
 				(*status_reg) |= PX4IO_P_STATUS_MIXER_YAW_LIMIT;
@@ -326,8 +340,14 @@ MultirotorMixer::mix(float *outputs, unsigned space, uint16_t *status_reg)
 			// allow to reduce thrust to get some yaw response
 			float thrust_reduction = fminf(0.15f, out - 1.0f);
 			thrust -= thrust_reduction;
-			yaw = (1.0f - ((roll * _rotors[i].roll_scale + pitch * _rotors[i].pitch_scale) *
-				       roll_pitch_scale + thrust + boost)) / _rotors[i].yaw_scale;
+
+			if (fabsf(_rotors[i].yaw_scale) <= FLT_EPSILON) {
+				yaw = 0.0f;
+
+			} else {
+				yaw = (1.0f - ((roll * _rotors[i].roll_scale + pitch * _rotors[i].pitch_scale) *
+					       roll_pitch_scale + thrust + boost)) / _rotors[i].yaw_scale;
+			}
 
 			if (status_reg != NULL) {
 				(*status_reg) |= PX4IO_P_STATUS_MIXER_YAW_LIMIT;

@@ -8,8 +8,6 @@ then
 	param set PE_VELD_NOISE 0.35
 	param set PE_POSNE_NOISE 0.5
 	param set PE_POSD_NOISE 1.25
-	param set PE_GBIAS_PNOISE 0.000001
-	param set PE_ABIAS_PNOISE 0.0001
 
 	param set NAV_ACC_RAD 2.0
 	param set RTL_RETURN_ALT 30.0
@@ -17,20 +15,8 @@ then
 	param set PWM_DISARMED 900
 	param set PWM_MIN 1075
 	param set PWM_MAX 1950
-fi
 
-# Transitional support: ensure suitable PWM min/max param values
-if param compare PWM_MIN 1000
-then
-	param set PWM_MIN 1075
-fi
-if param compare PWM_MAX 2000
-then
-	param set PWM_MAX 1950
-fi
-if param compare PWM_DISARMED 0
-then
-	param set PWM_DISARMED 900
+	param set RTL_LAND_DELAY 0
 fi
 
 # set environment variables (!= parameters)
@@ -47,3 +33,17 @@ set PWM_AUX_OUT 1234
 set PWM_AUX_DISARMED 1500
 set PWM_AUX_MIN 1000
 set PWM_AUX_MAX 2000
+
+# Transitional support: ensure suitable PWM min/max param values
+if param compare PWM_MIN 1000
+then
+	param set PWM_MIN 1075
+fi
+if param compare PWM_MAX 2000
+then
+	param set PWM_MAX 1950
+fi
+if param compare PWM_DISARMED 0
+then
+	param set PWM_DISARMED 900
+fi
