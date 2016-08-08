@@ -8,6 +8,7 @@ set(config_module_list
 	#
 	# Board support modules
 	#
+	modules/px4_simulink_app
 	drivers/device
 	drivers/stm32
 	drivers/stm32/adc

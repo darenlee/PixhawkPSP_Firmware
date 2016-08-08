@@ -8,6 +8,7 @@ set(config_module_list
 	#
 	# Board support modules
 	#
+	modules/px4_simulink_app
 	drivers/device
 	drivers/stm32
 	drivers/stm32/adc
@@ -46,9 +47,9 @@ set(config_module_list
 	drivers/pwm_input
 	drivers/camera_trigger
 	drivers/bst
-	drivers/snapdragon_rc_pwm
-	drivers/lis3mdl
-	drivers/bmi160
+	#drivers/snapdragon_rc_pwm
+	#drivers/lis3mdl
+	#drivers/bmi160
 
 	#
 	# System commands
@@ -75,16 +76,16 @@ set(config_module_list
 	modules/navigator
 	modules/mavlink
 	modules/gpio_led
-	modules/uavcan
+	#modules/uavcan
 	modules/land_detector
 
 	#
 	# Estimation modules (EKF/ SO3 / other filters)
 	#
 	modules/attitude_estimator_q
-	modules/ekf_att_pos_estimator
+	modules/ekf2
 	modules/position_estimator_inav
-	modules/local_position_estimator
+
 
 	#
 	# Vehicle Control
@@ -176,8 +177,8 @@ set(config_io_board
 	)
 
 set(config_extra_libs
-	uavcan
-	uavcan_stm32_driver
+	#uavcan
+	#uavcan_stm32_driver
 	)
 
 set(config_io_extra_libs
