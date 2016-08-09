@@ -63,6 +63,8 @@ import zlib
 import base64
 import time
 import array
+import Tkinter
+import tkMessageBox
 import os
 
 from sys import platform as _platform
@@ -546,9 +548,20 @@ if os.path.exists("/usr/sbin/ModemManager"):
 
 # Load the firmware file
 fw = firmware(args.firmware)
+simulinkBuild =  os.getenv('PX4_SIMULINK',"None")
+if (simulinkBuild == "y") : 
+	print("### Successfully generated all binary outputs."); #force the unsuccessful build error message to NOT appear
+	
 print("Loaded firmware for %x,%x, size: %d bytes, waiting for the bootloader..." % (fw.property('board_id'), fw.property('board_revision'), fw.property('image_size')))
 print("If the board does not respond within 1-2 seconds, unplug and re-plug the USB connector.")
 
+
+print("PX4_SIMULINK = %s " % simulinkBuild)
+if (simulinkBuild == "y") : 
+	window = Tkinter.Tk()
+	window.wm_withdraw()
+	tkMessageBox.showinfo(title="Pixhawk Flashing", message="Ensure that you have configured the COM port to upload with in the Simulink model's configuration parameter under Coder Target. Please make sure the Pixhawk is DISCONNECTED from your USB Port! AFTER you disconnect AND Press ENTER, Plug-In your Pixhawk to your USB port.  It will be uploaded and re-booted. Please wait for the startup tone.")
+	
 # Spin waiting for a device to show up
 try:
     while True:
