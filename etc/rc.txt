@@ -1,0 +1,31 @@
+usleep 1000
+uorb start
+usleep 1000
+nshterm /dev/ttyACM0 &
+usleep 1000
+px4io start
+usleep 1000
+#commander start
+#usleep 1000
+#mavlink start -d /dev/ttyS1 -b 115200
+#usleep 5000
+#dataman start
+#usleep 1000
+#navigator start
+#usleep 1000
+sh /etc/init.d/rc.sensors
+usleep 1000
+#sh /etc/init.d/rc.logging
+#usleep 1000
+#gps start
+attitude_estimator_q start
+position_estimator_inav start
+usleep 1000
+mtd start
+usleep 1000
+param load /fs/mtd_params
+usleep 1000
+rgbled start
+usleep 1000
+px4_simulink_app start
+exit
